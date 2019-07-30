@@ -1,8 +1,9 @@
 <header>
     {% if user.is_authenticated %}
-        {{user.username}} <a href="{% url 'logout' %}">logout</a>
+        {{user.username.title}} <a href="{% url 'logout' %}">logout</a>
     {% else %}
-    <a href="{% url 'login' %}">login</a>
+    <a href="{% url 'signup' %}">Signup</a>
+    <a href="{% url 'login' %}">login</a>  
     {% endif %}
 </header>
 {% block body %}
