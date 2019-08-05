@@ -1,10 +1,17 @@
-<header>
-    {% if user.is_authenticated %}
-        {{user.username.title}} <a href="{% url 'logout' %}">logout</a>
-    {% else %}
-    <a href="{% url 'signup' %}">Signup</a>
-    <a href="{% url 'login' %}">login</a>  
-    {% endif %}
-</header>
-{% block body %}
-{% endblock body %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> {% comment %}
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"> {% endcomment %}
+</head>
+
+<body>
+
+    {% block content %}
+    
+    {% endblock content %}
+</body>
+
+</html>
