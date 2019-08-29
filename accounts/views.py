@@ -27,7 +27,7 @@ def login(request):
         MyLoginForm = LoginForm(request.POST)
         if MyLoginForm.is_valid():
             username = MyLoginForm.cleaned_data['username']
-            password = MyLoginForm.cleaned_data['passsword']
+            password = MyLoginForm.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)

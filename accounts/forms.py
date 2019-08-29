@@ -66,6 +66,9 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = UserModel
         fields = ('username', 'password')
+        widgets = {
+            'password': forms.PasswordInput()
+        }
     # class
 # class SignupForm(forms.Form):
 #     """Login definition."""
