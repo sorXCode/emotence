@@ -19,11 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('feeds.urls')),
-<<<<<<< HEAD
     path('user/', include('user.urls', namespace='user'))
-||||||| merged common ancestors
-=======
-    path("accounts/", include('django.contrib.auth.urls')),#using predefined signin/logout views
-    path('accounts/', include('accounts.urls')),
->>>>>>> master
 ]
