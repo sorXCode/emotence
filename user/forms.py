@@ -66,8 +66,8 @@ class SignupForm(forms.ModelForm):
 
 
     def clean_raw_username(self):
-        username = self.cleaned_data['raw_username'].lower()
-        if get_user_model().objects.filter(username=username):
+        username = self.cleaned_data['raw_username']
+        if get_user_model().objects.filter(username=username.lower()).exists():
             raise forms.ValidationError(
                 "Username Taken, Try another.."
             )

@@ -2,7 +2,8 @@
 
 {% block body %}
 <h1>EmotenX</h1>
-{{ username }}
+{{ request.user.raw_username }}
+{% comment %} {{ request.username }} {% endcomment %}
 <h3>Loading...</h3>
 <p><a href="{% url 'user:logout' %}">Logout</a></p>
 {% endblock body %}
