@@ -31,14 +31,14 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'user',
+    'feeds',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'feeds',
-    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -57,7 +57,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates'),
-                #  os.path.join(BASE_DIR, 'accounts/templates'),
+                #  os.path.join(BASE_DIR, 'user/templates'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'emotence.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'emotence',
+        'NAME': 'emotencee',
         'USER': 'admin.emotence',
         'PASSWORD': 'Em0ten*',
         'HOST': '127.0.0.1',
@@ -90,6 +90,8 @@ DATABASES = {
         }
     }
 }
+
+AUTH_USER_MODEL = 'user.UserModel'
 
 
 # Password validation
@@ -133,3 +135,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # SECURE_SSL_REDIRECT = True
+
+LOGIN_REDIRECT_URL = "feeds:home"

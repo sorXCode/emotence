@@ -1,0 +1,18 @@
+{% block title %}
+<a href="{% url 'user:login' %}"> LOGIN</a> | <a href="{% url 'user:signup' %}"> SIGNUP</a>
+{% endblock title %}
+
+{% block main %}
+{% url 'user:login' as login %}
+
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit" >
+{% if request.path == login %}Login
+{% else %} Signup
+{% endif %} 
+</button>
+
+</form>
+{% endblock main %}

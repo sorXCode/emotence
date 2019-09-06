@@ -2,24 +2,30 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from .models import UserModel
 import string
-
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
 
 class SignupForm(forms.ModelForm):
-    
+    password = forms.CharField(min_length=6,
+                               strip=False,
+                               label=_('PassPhrase'),
+                               widget=forms.PasswordInput,
+                               )
+
     class Meta:
         model = UserModel
-        fields = ("username", "email", "password")
+        fields = ("raw_username", "email")
         labels = {
-            'username': _('Choose an identity'),
+            'raw_username': _('Choose an identity'),
             'email': _('Email'),
-            'password': _('PassPhrase')
         }
         help_texts = {
-            'username': _(''),
+            'raw_username': _(''),
         }
         error_messages = {
-            'username': {
-                'max_length': _('identity too long!')
+            'raw_username': {
+                'max_length': _('identity too long!'),
+                'exists': _('Try again, Username Taken')
             },
         }
         widgets = {
@@ -59,18 +65,18 @@ class SignupForm(forms.ModelForm):
         return password
 
 
-class LoginForm(forms.ModelForm):
+    def clean_raw_username(self):
+        username = self.cleaned_data['raw_username'].lower()
+        if get_user_model().objects.filter(username=username):
+            raise forms.ValidationError(
+                "Username Taken, Try another.."
+            )
+        return username
+
+class LoginForm(AuthenticationForm):
     """
     Login definition
     """
-    class Meta:
-        model = UserModel
-        fields = ('username', 'password')
-        widgets = {
-            'password': forms.PasswordInput()
-        }
-    # class
-# class SignupForm(forms.Form):
-#     """Login definition."""
-#     username = forms.CharField(required=True)
-#     password = forms.CharField(required=True, widget=forms.PasswordInput())
+
+    def clean_username(self):
+        return self.cleaned_data['username'].lower()
