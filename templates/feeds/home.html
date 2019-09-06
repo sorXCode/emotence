@@ -1,0 +1,9 @@
+{% extends 'feeds/base.html' %}
+
+{% block body %}
+<h1>EmotenX</h1>
+{{ request.user.raw_username }}
+{% comment %} {{ request.username }} {% endcomment %}
+<h3>Loading...</h3>
+<p><a href="{% url 'user:logout' %}">Logout</a></p>
+{% endblock body %}
