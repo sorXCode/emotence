@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+# AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'emotence.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'emotencee',
+        'NAME': 'emotence',
         'USER': 'admin.emotence',
         'PASSWORD': 'Em0ten*',
         'HOST': '127.0.0.1',
@@ -93,7 +93,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'user.UserModel'
+# AUTH_USER_MODEL = 'user.UserModel'
 
 
 # Password validation
@@ -139,3 +139,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # SECURE_SSL_REDIRECT = True
 
 LOGIN_REDIRECT_URL = "feeds:home"
+
+# Media and files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

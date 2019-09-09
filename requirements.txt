@@ -2,3 +2,5 @@ gunicorn
 django
 dj-static
 bcrypt
+psycopg2
+pillow
