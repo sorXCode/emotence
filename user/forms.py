@@ -1,14 +1,11 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from .models import UserModel, User
+from .models import Profile, User
 import string
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 
-# forms.mod
-
-
-class SignupForm(forms.ModelForm):
+class SignupOthers(forms.ModelForm):
     password = forms.CharField(min_length=6,
                                strip=False,
                                label=_('PassPhrase'),
@@ -16,13 +13,10 @@ class SignupForm(forms.ModelForm):
                                )
 
     class Meta:
-        models = (UserModel, User) #not working, creating two 
-        # modelforms and serving both from view would work.. \
-        # to explore django-betterform module, sounds interesting
-        fields = ("raw_username", "email")
+        model = Profile
+        fields = ("raw_username",)
         labels = {
             'raw_username': _('Choose an identity'),
-            'email': _('Email'),
         }
         help_texts = {
             'raw_username': _(''),
@@ -77,6 +71,12 @@ class SignupForm(forms.ModelForm):
             )
         return username
 
+class SignupEmail(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = ("email",)
+
 
 class LoginForm(AuthenticationForm):
     """
@@ -90,7 +90,7 @@ class LoginForm(AuthenticationForm):
 class ProfileForm(forms.ModelForm):
 
     class Meta:
-        model = UserModel
+        model = Profile
         fields = ('profile_picture', 'bio', 'location',)
 
 

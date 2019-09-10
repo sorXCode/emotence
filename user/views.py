@@ -8,8 +8,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, DetailView
 
-from .forms import LoginForm, SignupForm, ProfileForm, UserForm
-from .models import UserModel
+from .forms import LoginForm, SignupOthers, SignupEmail, ProfileForm, UserForm
+from .models import Profile
 
 
 class RegisterationView(CreateView):
@@ -22,43 +22,30 @@ def signup(request):
     username = 'AlienX'
 
     if request.method == 'POST':
-        MySignupForm = SignupForm(request.POST)
-        if MySignupForm.is_valid():
+        MySignupOthers = SignupOthers(request.POST)
+        MySignupEmail = SignupEmail(request.POST)
+        # MySignupEmail = SignupEmail(request.POST['SignupEmail'])
+        if MySignupOthers.is_valid() and MySignupEmail.is_valid():
             # username = MySignupForm.cleaned_data['raw_username'].lower()
             # try:
-            user = MySignupForm.save(commit=False)
-            user.set_password(MySignupForm.cleaned_data['password'])
-            user.username = MySignupForm.cleaned_data['raw_username'].lower()
+            user = MySignupEmail.save(commit=False)
+            user.set_password(MySignupOthers.cleaned_data['password'])
+            user.username = MySignupOthers.cleaned_data['raw_username'].lower()
+            user.raw_username = MySignupOthers.cleaned_data['raw_username']
             user.save()
             return redirect('feeds:home')
             # except IntegrityError:
             #     messages.info(request,' Try again, Username Taken')
             # return render(redirect(('home')))
     else:
-        MySignupForm = SignupForm()
+        MySignupOthers = SignupOthers()
+        MySignupEmail = SignupEmail()
 
     return render(request, 'user/base.html', {
-        'form': MySignupForm, 'username': username
+        'form': [MySignupOthers, MySignupEmail], 'username': username
     })
 
 
-# def login(request):
-#     if request.method == 'POST':
-#         MyLoginForm = LoginForm(request.POST)
-#         if MyLoginForm.is_valid():
-#             username = MyLoginForm.cleaned_data['username']
-#             password = MyLoginForm.cleaned_data['password']
-#             print(username)
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                 login(request, user)
-#                 print('logging_in')
-#                 redirect('feeds:home')
-#     else:
-#         MyLoginForm = LoginForm()
-#     return render(request, 'user/login.html', {
-#         'form': MyLoginForm
-#     })
 
 
 class Login(LoginView):
@@ -75,7 +62,7 @@ def home(request):
 
 
 class ProfileView(DetailView):
-    queryset = UserModel.objects.all().select_related('user')
+    queryset = Profile.objects.all().select_related('user')
     template_name = "user/profile.html"
 
     # def get_context_data(self, **kwargs):

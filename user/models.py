@@ -17,14 +17,14 @@ def profile_pic_directory_with_uuid(instance, filename):
 #         return self.get(**{self.model.USERNAME_FIELD + '__iexact': username})
 
 
-class UserModel(models.Model):
+class Profile(models.Model):
     """
     User model for user
     """
     # create a one to one relateion to User model to obey atomicity rule
     # objects = CustomUserManager
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    raw_username = models.CharField(max_length=50, null=True)
+    raw_username = models.CharField(max_length=50, blank=False)
     bio = models.TextField(_("Short Bio"), max_length=500, blank=True)
     location = models.CharField(max_length=50, blank=True)
     profile_picture = models.ImageField(
@@ -36,7 +36,7 @@ class UserModel(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created,  **kwargs):
     if created:
-        UserModel.objects.create(user=instance)
+        Profile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

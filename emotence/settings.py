@@ -93,7 +93,7 @@ DATABASES = {
     }
 }
 
-# AUTH_USER_MODEL = 'user.UserModel'
+# AUTH_USER_MODEL = 'user.Profile'
 
 
 # Password validation

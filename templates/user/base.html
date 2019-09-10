@@ -7,7 +7,12 @@
 
 <form method="post">
 {% csrf_token %}
-{{ form.as_p }}
+{% if form.length == 1 %}
+{{form.as_p}}
+{% else %}
+{% for form_ in form %}
+{{ form_.as_p }}{% endfor %}
+{% endif %}
 <button type="submit" >
 {% if request.path == login %}Login
 {% else %} Signup
