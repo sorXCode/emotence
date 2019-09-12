@@ -2,16 +2,27 @@
 <a href="{% url 'user:login' %}"> LOGIN</a> | <a href="{% url 'user:signup' %}"> SIGNUP</a>
 {% endblock title %}
 
+
+{% block ux %}
+{% lorem 4 w random %}
+<br>
+It's now {% now "jS H:i" %}
+{% endblock ux %}
 {% block main %}
+
 {% url 'user:login' as login %}
 
 <form method="post">
 {% csrf_token %}
-{% if form.length == 1 %}
-{{form.as_p}}
-{% else %}
+{% if form and form|length == 0 %}
+{{ form.as_p }}
+{% elif form and form|length >= 1 %}
 {% for form_ in form %}
-{{ form_.as_p }}{% endfor %}
+{{ form_.as_p }}
+{% endfor %}
+{{ form.as_p }}
+{% else %}
+{{"Attach a form to view"|title}}
 {% endif %}
 <button type="submit" >
 {% if request.path == login %}Login
@@ -21,3 +32,5 @@
 
 </form>
 {% endblock main %}
+{% blocktrans %}
+{% endblocktrans %}
