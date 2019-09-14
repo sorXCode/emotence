@@ -1,0 +1,9 @@
+{% extends 'user/base.html' %}
+{% comment %} {% block title %} Signup {% endblock title %} {% endcomment %}
+{% comment %} <button type="submit">Signup</button> {% endcomment %}
+{% comment %} username {% endcomment %}
+{% block body %}
+{{ block.super }}
+{{form.as_p}}
+<button type="submit">Signup</button>
+{% endblock body %}

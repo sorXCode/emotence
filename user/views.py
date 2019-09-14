@@ -4,12 +4,18 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db import IntegrityError
 from django.db.models import F
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, DetailView
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import CreateView, DetailView, TemplateView, ListView, UpdateView
 
-from .forms import LoginForm, SignupOthers, SignupEmail, ProfileForm, UserForm
+from .forms import LoginForm, ProfileForm, SignupForm, UserForm
 from .models import Profile
+
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
+from django.views import View
 
 
 class RegisterationView(CreateView):
@@ -18,39 +24,43 @@ class RegisterationView(CreateView):
     success_url = reverse_lazy('feeds:home')
 
 
-def signup(request):
+class SignUp(View):
+    form_class = SignupForm
+    template_name = 'user/signup.html'
     username = 'AlienX'
 
-    if request.method == 'POST':
-        MySignupOthers = SignupOthers(request.POST)
-        MySignupEmail = SignupEmail(request.POST)
-        # MySignupEmail = SignupEmail(request.POST['SignupEmail'])
-        if MySignupOthers.is_valid() and MySignupEmail.is_valid():
-            # username = MySignupForm.cleaned_data['raw_username'].lower()
-            # try:
-            user = MySignupEmail.save(commit=False)
-            user.set_password(MySignupOthers.cleaned_data['password'])
-            user.username = MySignupOthers.cleaned_data['raw_username'].lower()
-            user.raw_username = MySignupOthers.cleaned_data['raw_username']
-            user.save()
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            fields = ['username', 'email', 'password', 'phone']
+            self.username, email, password, phone = [
+                form.cleaned_data[field] for field in fields]
+
+            user = User.objects.create_user(
+                username=self.username.lower(),
+                email=email,
+                password=password)
+            profile = user.profile
+            profile.phone = phone
+            profile.raw_username = self.username
+            profile.save()
+            messages.success(request, _("Signup Successful!"))
+            # auth(request, user=user)
             return redirect('feeds:home')
-            # except IntegrityError:
-            #     messages.info(request,' Try again, Username Taken')
-            # return render(redirect(('home')))
-    else:
-        MySignupOthers = SignupOthers()
-        MySignupEmail = SignupEmail()
+        return render(request, self.template_name, {'form': form})
 
-    return render(request, 'user/base.html', {
-        'form': [MySignupOthers, MySignupEmail], 'username': username
-    })
-
-
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name,
+                      {
+                          'username': self.username,
+                          'form': form,
+                      })
 
 
 class Login(LoginView):
     form_class = LoginForm
-    template_name = 'user/base.html'
+    template_name = 'user/login.html'
 
 
 class Logout(LogoutView):
@@ -61,10 +71,24 @@ def home(request):
     return render(request, 'user/home.html')
 
 
+
+
 class ProfileView(DetailView):
     queryset = Profile.objects.all().select_related('user')
     template_name = "user/profile.html"
+    context_object_name = 'profile_object'
 
+
+@method_decorator(login_required, name='dispatch')
+class ProfileListView(ListView):
+    # model = User
+    template_name = "user/profile.html"
+    context_object_name = 'profile_object'
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User,
+                                      username=self.kwargs['username'].lower())
+        return Profile.objects.filter(user=self.user)
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
     #     context["profile_pic_form"] = self.profile_pic_form()
@@ -76,3 +100,8 @@ class ProfileView(DetailView):
     #     if self.request.user.is_authenticated:
     #         return ProfilePicUpdateForm
     #     return None
+
+
+class UserUpdateView(UpdateView):
+    model = User
+    template_name = "user/update.html"

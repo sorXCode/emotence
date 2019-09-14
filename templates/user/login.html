@@ -1,0 +1,6 @@
+{% extends 'user/base.html' %}
+{% block body %}
+{{ block.super }}
+{{form.as_p}}
+<button type="submit">Login</button>
+{% endblock body %}

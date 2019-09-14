@@ -1,9 +1,8 @@
 {% extends 'feeds/base.html' %}
 
-{% block body %}
+{% block content %}
 <h1>EmotenX</h1>
-{{ request.user.raw_username }}
-{% comment %} {{ request.username }} {% endcomment %}
+    Welcome <strong><a href="{% url 'user:user_profile' request.user%}">{{ request.user|default_if_none:"X" }} </strong></a>
 <h3>Loading...</h3>
-<p><a href="{% url 'user:logout' %}">Logout</a></p>
-{% endblock body %}
+{{ request.user.id }}
+{% endblock content %}

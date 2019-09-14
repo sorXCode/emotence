@@ -12,9 +12,12 @@ def profile_pic_directory_with_uuid(instance, filename):
     return "{instance.raw_user}{uuid4()}"
 
 
-# class CustomUserManager(UserManager):
-#     def get_by_natural_key(self, username):
-#         return self.get(**{self.model.USERNAME_FIELD + '__iexact': username})
+# class ProfileManager(models.Manager):
+#     def get_queryset(self):
+#         return super().get_queryset().filter()
+
+    # def get_by_natural_key(self, username):
+    #     return self.get(**{self.model.USERNAME_FIELD + '__iexact': username})
 
 
 class Profile(models.Model):
@@ -24,19 +27,24 @@ class Profile(models.Model):
     # create a one to one relateion to User model to obey atomicity rule
     # objects = CustomUserManager
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    raw_username = models.CharField(max_length=50, blank=False)
+    raw_username = models.CharField(max_length=50, blank=True)
+    phone = models.CharField(_("Phone"), max_length=11, blank=True)
+    profile_picture = models.ImageField(
+        _("Display Picture"),
+        upload_to=profile_pic_directory_with_uuid,
+        blank=True)
     bio = models.TextField(_("Short Bio"), max_length=500, blank=True)
     location = models.CharField(max_length=50, blank=True)
-    profile_picture = models.ImageField(
-        _("Display Picture"), upload_to=profile_pic_directory_with_uuid)
 
     def __str__(self):
         return self.raw_username
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created,  **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
