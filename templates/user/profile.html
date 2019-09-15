@@ -1,11 +1,13 @@
 {% extends "feeds/base.html" %}{% block content %}
     <div>
         {% for obj in profile_object %}
+        <img src="{{ obj.userimage. }}" alt="dp">
         <h1><p>{{ obj.raw_username }} </p></h1>
-
-        <p>{{ obj.user.email }} </p>
-        <img src="{{ obj.profile_picture }}" alt="dp">
-        <p>{{ obj.phone }} </p>
+        <p>Short Bio: {{ obj.short_bio }}</p>
+        <p>Phone: {{ obj.phone }} </p>
+        <p>Email: {{ obj.user.email }} </p>
+        <p>Location: {{ obj.location }}</p>
+        <p> {{ obj.email }} </p>
         {% endfor %}
 <a href="{% url 'user:update' request.user %}">Edit Profile</a>
 {% endblock content %}

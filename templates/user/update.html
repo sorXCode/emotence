@@ -1,0 +1,13 @@
+{% extends "feeds/base.html" %}
+{% block content %}
+{% load static %}
+{% if form %}
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit">Update Profile</button>
+</form>
+{% else %}
+{{ 'Attach a form'|title }}
+{% endif %}
+{% endblock content %}

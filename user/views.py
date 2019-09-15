@@ -1,21 +1,21 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db import IntegrityError
 from django.db.models import F
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
-from django.views.generic import CreateView, DetailView, TemplateView, ListView, UpdateView
-
-from .forms import LoginForm, ProfileForm, SignupForm, UserForm
-from .models import Profile
-
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from django.views import View
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
+
+from .forms import LoginForm, ProfileForm, SignupForm, ImageForm
+from .models import Profile, UserImage
 
 
 class RegisterationView(CreateView):
@@ -71,8 +71,6 @@ def home(request):
     return render(request, 'user/home.html')
 
 
-
-
 class ProfileView(DetailView):
     queryset = Profile.objects.all().select_related('user')
     template_name = "user/profile.html"
@@ -85,23 +83,56 @@ class ProfileListView(ListView):
     template_name = "user/profile.html"
     context_object_name = 'profile_object'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["images_form"] = self.profile_image_form()
+        return context
+
+    def profile_image_form(self):
+        if self.request.user.is_authenticated:
+            return ImageForm()
+
     def get_queryset(self):
         self.user = get_object_or_404(User,
                                       username=self.kwargs['username'].lower())
-        return Profile.objects.filter(user=self.user)
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["profile_pic_form"] = self.profile_pic_form()
-    #     # if self.request.user.is_authenticatd:
-    #     #     ProfilePicUpdateForm
-    #     return context
-
-    # def profile_pic_form(self):
-    #     if self.request.user.is_authenticated:
-    #         return ProfilePicUpdateForm
-    #     return None
+        self.profile = Profile.objects.filter(user=self.user)
+        self.userImage = UserImage.objects.all()
+        # print(len(self.userImage))
+        print(self.userImage)
+        return self.profile
 
 
-class UserUpdateView(UpdateView):
-    model = User
+class ProfileUpdateView(View):
+    form_class = ProfileForm
     template_name = "user/update.html"
+
+    def get(self, request, *args, **kwargs):
+        # if self.request.user.is_authenticated():
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        profile = self.form_class(request.POST)
+        if profile.is_valid():
+            profile.save()
+
+
+class ImageUpdateView(View):
+    form_class = ImageForm
+    template_name = 'user/update.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            print('dkdkd')
+            return redirect("user:user_profile", request.user)
+        else:
+            print("no non non")
+            form = self.form_class()
+
+        return render(request, self.template_name, {'form': form})

@@ -9,30 +9,16 @@ from uuid import uuid4
 
 
 def profile_pic_directory_with_uuid(instance, filename):
-    return "{instance.raw_user}{uuid4()}"
-
-
-# class ProfileManager(models.Manager):
-#     def get_queryset(self):
-#         return super().get_queryset().filter()
-
-    # def get_by_natural_key(self, username):
-    #     return self.get(**{self.model.USERNAME_FIELD + '__iexact': username})
+    return f"{instance.profile.raw_username}{uuid4()}"
 
 
 class Profile(models.Model):
     """
-    User model for user
+    Profile model for user
     """
-    # create a one to one relateion to User model to obey atomicity rule
-    # objects = CustomUserManager
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     raw_username = models.CharField(max_length=50, blank=True)
     phone = models.CharField(_("Phone"), max_length=11, blank=True)
-    profile_picture = models.ImageField(
-        _("Display Picture"),
-        upload_to=profile_pic_directory_with_uuid,
-        blank=True)
     bio = models.TextField(_("Short Bio"), max_length=500, blank=True)
     location = models.CharField(max_length=50, blank=True)
 
@@ -49,3 +35,14 @@ def create_user_profile(sender, instance, created,  **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class UserImage(models.Model):
+    profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    image = models.ImageField(
+        _("Display Picture"),
+        upload_to=profile_pic_directory_with_uuid,
+        blank=True)
+    uploaded = models.DateTimeField(auto_now=True)
