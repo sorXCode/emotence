@@ -5,8 +5,10 @@ import string
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 
+
 class SignupForm(forms.ModelForm):
     phone = forms.CharField(max_length=11, required=True)
+
     class Meta:
         model = User
         fields = ('username', "email", "password")
@@ -17,7 +19,7 @@ class SignupForm(forms.ModelForm):
             'password': "PassPhrase",
         }
         help_texts = {
-            "username" : _(""),
+            "username": _(""),
         }
 
     def clean_password(self):
@@ -51,7 +53,7 @@ class SignupForm(forms.ModelForm):
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        if get_user_model().objects.filter(username__iexact=username.lower()).exists():
+        if get_user_model().objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(
                 "Username Taken, Try another.."
             )
@@ -83,10 +85,16 @@ class ImageForm(forms.ModelForm):
 
     # profile = forms.ModelChoiceField(
     #     widget=forms.HiddenInput,
-    #     queryset=get_user_model().objects.all(),
+    #     queryset=get_user_model().objects.filter(),
     #     disabled=True
     # )
 
+    # profile, user = None, None
     class Meta:
         model = UserImage
-        fields = ('image', 'user', 'profile')
+        fields = ('image',)
+
+    def save(self, *args, **kwargs):
+        _image = UserImage.objects.create(
+            user=kwargs['user'], profile=kwargs['profile'], image=kwargs['image'])
+        _image.save()

@@ -38,11 +38,14 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 class UserImage(models.Model):
-    profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    profile = models.ForeignKey("Profile", on_delete=models.CASCADE)
     image = models.ImageField(
         _("Display Picture"),
         upload_to=profile_pic_directory_with_uuid,
         blank=True)
     uploaded = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.profile}: {self.image}"
